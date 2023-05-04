@@ -19,8 +19,8 @@ var reNID = regexp.MustCompile(`^(?i)` + regexNID + `$`)
 var reNSS = regexp.MustCompile(`^(?i)` + regexNSS + `$`)
 var reComponent = regexp.MustCompile(`^(?i)` + regexComponent + `$`)
 var reURN = regexp.MustCompile(`^(?i)urn:(` + regexNID + `):(` + regexNSS + `)` +
-	`(?:(\?=` + regexComponent + `))?` +
 	`(?:(\?+` + regexComponent + `))?` +
+	`(?:(\?=` + regexComponent + `))?` +
 	`(?:(#` + regexComponent + `))?$`)
 var reNormPerEnc = regexp.MustCompile(`(%[0-9a-f]{2})`)
 
@@ -211,14 +211,14 @@ func Parse(s string, options ...Option) (*URN, error) {
 		if len(m[i]) < 2 {
 			continue
 		}
-		c := m[i][1:len(m[i])]
+
 		switch {
-		case m[i][0:1] == "?+":
-			u.rComponent = c
-		case m[i][0:1] == "?=":
-			u.qComponent = c
+		case m[i][0:2] == "?+":
+			u.rComponent = m[i][2:len(m[i])]
+		case m[i][0:2] == "?=":
+			u.qComponent = m[i][2:len(m[i])]
 		case m[i][0] == '#':
-			u.fComponent = c
+			u.fComponent = m[i][1:len(m[i])]
 		}
 	}
 

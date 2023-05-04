@@ -176,11 +176,16 @@ func TestNewURN(t *testing.T) {
 
 	t.Run("specify all optional components", func(t *testing.T) {
 		u, err := New("isbn", "978-0135800911",
-			WithResolution("resolution"), WithQuery("query"), WithFragment("fragment"))
+			WithResolution("resolution"), WithQuery("query=123"), WithFragment("fragment"))
 		xt.OK(t, err)
 		xt.Eq(t, "resolution", u.RComponent())
-		xt.Eq(t, "query", u.QComponent())
+		xt.Eq(t, "query=123", u.QComponent())
 		xt.Eq(t, "fragment", u.FComponent())
+
+		up, err := Parse(u.String())
+		xt.Eq(t, "resolution", up.RComponent())
+		xt.Eq(t, "query=123", up.QComponent())
+		xt.Eq(t, "fragment", up.FComponent())
 	})
 
 	t.Run("cases in NSS are retained when option provided", func(t *testing.T) {
